@@ -1,46 +1,50 @@
 {% set name = "azure-cli-core" %}
-{% set version = "2.0.61" %}
+{% set version = "2.85.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 15184b916e9ebaab4a630716d980384992f6d6084cf2eff23c704ecaf421adf6
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_')}}-{{ version }}.tar.gz
+  sha256: a5bb30cd88eb0a5082c46be9da2ed5a51509e2b94a1b5574e7f63faa4bb1e1d9
 
 build:
-  noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  skip: true  # [py<310]
 
 requirements:
   host:
-    - python >=3
     - pip
-  run:
-    - python >=3
-    - adal >=1.2.0
-    - antlr-python-runtime
-    - argcomplete >=1.8.0
-    - azure-cli-telemetry
-    - azure-mgmt-resource ==2.1.0
-    - colorama >=0.3.9
-    - humanfriendly >=4.7
-    - jmespath
-    - knack ==0.5.1
-    - msrest >=0.4.4
-    - msrestazure >=0.4.25
-    - paramiko >=2.0.8
-    - pip
-    - pygments
-    - pyjwt
-    - pyopenssl >=17.1.0
-    - pyyaml
-    - requests >=2.20.0
-    - six
-    - tabulate >=0.7.7,<=0.8.2
+    - python
     - wheel
+    - setuptools
+  run:
+    - python
+    - argcomplete >=3.5.2,<3.6
+    - azure-cli-telemetry ==1.1.0
+    - azure-core >=1.39.0,<1.40
+    - azure-mgmt-core >=1.2.0,<2
+    - cryptography
+    - distro  # [linux]
+    - humanfriendly >=10.0,<11
+    - jmespath
+    - knack >=0.11.0,<0.12
+    - microsoft-security-utilities-secret-masker >=1.0.0b4,<1.0.1
+    - msal_extensions ==1.2.0
+    - msal ==1.35.1
+    - packaging >=20.9
+    - pkginfo >=1.5.0.1
+    - pyjwt >=2.1.0
+    - pyopenssl >=17.1.0
+    - py-deviceid
+    - requests
+  run_constrained:
+    # msal[broker] -> pymsalruntime
+    - pymsalruntime >=0.14,<0.21  # [win]
+    # requests[socks] -> pysocks
+    - pysocks >=1.5.6,!=1.5.7
 
 test:
   imports:
